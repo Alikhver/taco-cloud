@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @SpringBootApplication
+
 public class TacoCloudApplication {
 
     public static void main(String[] args) {
