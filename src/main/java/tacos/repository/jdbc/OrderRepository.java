@@ -1,7 +1,7 @@
 package tacos.repository.jdbc;
 
-import tacos.domain.Order;
+import tacos.domain.TacoOrder;
 
 public interface OrderRepository {
-    Order save(Order order);
+    TacoOrder save(TacoOrder order);
 }

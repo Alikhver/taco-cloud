@@ -1,77 +1,80 @@
 package tacos.web;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import tacos.domain.Ingredient;
-import tacos.domain.Order;
 import tacos.domain.Taco;
+import tacos.domain.TacoOrder;
 import tacos.repository.jpa.JpaIngredientRepository;
-import tacos.repository.jpa.JpaTacoRepository;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Controller
 @RequestMapping("/design")
-@SessionAttributes("order")
+@SessionAttributes("tacoOrder")
 public class DesignTacoController {
 
-    public static final String DESIGN_VIEW_NAME = "design";
+    private final JpaIngredientRepository ingredientRepo;
 
-    private final JpaIngredientRepository ingredientRepository;
-    private final JpaTacoRepository tacoRepository;
-
-    public DesignTacoController(JpaIngredientRepository ingredientRepository,
-                                JpaTacoRepository tacoRepository) {
-        this.ingredientRepository = ingredientRepository;
-        this.tacoRepository = tacoRepository;
+    @Autowired
+    public DesignTacoController(
+            JpaIngredientRepository ingredientRepo) {
+        this.ingredientRepo = ingredientRepo;
     }
 
-    @ModelAttribute(name = "order")
-    public Order order() {
-        return new Order();
+    @ModelAttribute
+    public void addIngredientsToModel(Model model) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        ingredientRepo.findAll().forEach(ingredients::add);
+
+        Ingredient.Type[] types = Ingredient.Type.values();
+        for (Ingredient.Type type : types) {
+            model.addAttribute(type.toString().toLowerCase(),
+                    filterByType(ingredients, type));
+        }
     }
 
-    @ModelAttribute(name = "design")
+    @ModelAttribute(name = "tacoOrder")
+    public TacoOrder order() {
+        return new TacoOrder();
+    }
+
+    @ModelAttribute(name = "taco")
     public Taco taco() {
         return new Taco();
     }
 
     @GetMapping
     public String showDesignForm(Model model) {
-        List<Ingredient> ingredients = new ArrayList<>();
-        ingredientRepository.findAll().forEach(ingredients::add);
-
-        Ingredient.Type[] types = Ingredient.Type.values();
-        for (Ingredient.Type type : types) {
-            model.addAttribute(type.toString().toLowerCase(), ingredients.stream()
-                    .filter(it -> it.getType().name().equals(type.name()))
-                    .collect(Collectors.toList()));
-        }
-
-        model.addAttribute("design", new Taco());
-
-        return DESIGN_VIEW_NAME;
+        return "design";
     }
 
     @PostMapping
-    public String processDesign(@Valid Taco design, Errors errors, @ModelAttribute Order order) {
+    public String processTaco(
+            @Valid Taco taco, Errors errors,
+            @ModelAttribute TacoOrder tacoOrder, Model model) {
+
         if (errors.hasErrors()) {
-            return DESIGN_VIEW_NAME;
+            return "design";
         }
 
-        Taco saved = tacoRepository.save(design);
-        order.addDesign(saved);
+        tacoOrder.addTaco(taco);
 
-        log.info("Processing design: " + design);
-        //go to http get request to this path.
         return "redirect:/orders/current";
     }
+
+    private Iterable<Ingredient> filterByType(
+            List<Ingredient> ingredients, Ingredient.Type type) {
+        return ingredients
+                .stream()
+                .filter(x -> x.getType().equals(type))
+                .collect(Collectors.toList());
+    }
+
 }

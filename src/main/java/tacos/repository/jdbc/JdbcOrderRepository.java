@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
-import tacos.domain.Order;
 import tacos.domain.Taco;
+import tacos.domain.TacoOrder;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class JdbcOrderRepository implements OrderRepository {
     }
 
     @Override
-    public Order save(Order order) {
+    public TacoOrder save(TacoOrder order) {
 
         order.setPlacedAt(new Date());
         long orderId = saveOrderDetails(order);
@@ -47,7 +47,7 @@ public class JdbcOrderRepository implements OrderRepository {
         return order;
     }
 
-    private long saveOrderDetails(Order order) {
+    private long saveOrderDetails(TacoOrder order) {
         @SuppressWarnings("unchecked")
         Map<String, Object> values =
                 objectMapper.convertValue(order, Map.class);

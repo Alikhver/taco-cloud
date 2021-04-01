@@ -6,20 +6,18 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Data
-@RequiredArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
 public class Ingredient {
 
     @Id
-    private final String id;
-    private final String name;
-    private final Type type;
+    private String id;
+    private String name;
+    private Type type;
 
-    /**
-     * todo add javadoc
-     */
     public static enum Type {
         WRAP, PROTEIN, VEGGIES, CHEESE, SAUCE
     }
+
 }
