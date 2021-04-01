@@ -5,8 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@SpringBootApplication
-
+@SpringBootApplication(scanBasePackages = "tacos.repository.jpa")
 public class TacoCloudApplication {
 
     public static void main(String[] args) {
